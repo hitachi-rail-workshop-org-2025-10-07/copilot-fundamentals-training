@@ -1,19 +1,67 @@
-# In this short lab you'll use **GitHub Copilot** to transform a bare‑bones### 2 . Explore the Skeleton
+# 🛡️ Emergency Log Triage Demo
+
+## 🚀 What You'll Build
+
+In this short lab you'll use **GitHub Copilot** to transform a bare‑bones skeleton into a working Python utility that:
+
+1. Streams either plain or gzipped access‑log files.  
+2. Filters entries by **date range** (`--from`/`--to`) or **last *N* minutes** (`--minutes`).  
+3. Tallies `(HTTP‑status, endpoint)` pairs.  
+4. Prints a compact Markdown‑style histogram.
+
+The goal isn't perfect code—it's to **see Copilot's UI and autocompletion magic in action**. You'll prompt Copilot from comment blocks, accept (or finesse) its suggestions, and watch it generate production‑style boilerplate in seconds. 🪄
+
+---
+
+## 🗂️ Repository Layout
+
+| Path | Purpose |
+|------|---------|
+| `triage.py` | The starter script with **function stubs** and embedded Copilot prompts. |
+| `sample_access.log.gz` | A 1 000‑line gzipped access‑log spanning the last hour, containing a mix of 2xx/4xx/5xx, plus custom `499` and `321` errors for testing. |
+| `README.md` | The instructions for this demo. |
+
+---
+
+## 🛠️ Prerequisites
+
+| Tool | Version | Notes |
+|------|---------|-------|
+| Python | 3.8 + | Standard library only—no external packages required. |
+| VS Code | Latest | Any IDE that supports GitHub Copilot will work, but the steps below assume VS Code. |
+| GitHub Copilot | Enabled | Make sure the extension is signed‑in and working (check for 💡 suggestions). |
+
+---
+
+## 🧑‍💻 Hands‑On Walkthrough
+
+### 1. Clone & Open
+
+```bash
+git clone https://github.com/ps-copilot-sandbox/copilot-fundamentals-training.git
+cd demos/copilot-essentials/
+code .
+```
+
+### 2. Explore the Skeleton
+
 Open **`triage.py`** and familiarize yourself with the structure:
 
 - **5 empty functions** with `pass` statements that need implementation
-- **Detailed prompts** at the **bottom of the file** (lines 90+) with exact instructions for each function
+- **Detailed prompts** at the **top of the file** (lines 15-45) with exact instructions for each function
 - **Function signatures** already defined with proper type hints
 
 Example function structure:
+
 ```python
 def read_lines(file_path: Path) -> Iterable[str]:
     """Open plain or gzipped log file and yield each line (stripped)."""
     pass  # ← Copilot will fill this in
 ```
 
-### 3 . Find the Prompts 📜
-**Look near the top** of `triage.py` (around lines 15-45) to find the **Copilot prompts section**:
+### 3. Find the Prompts 📜
+
+**Look at the top** of `triage.py` (lines 15-45) to find the **Copilot prompts section**:
 
 ```python
 # 📝 Updated Copilot prompts with improvements and date range support
@@ -26,10 +74,11 @@ def read_lines(file_path: Path) -> Iterable[str]:
 
 **💡 Pro Tip:** Consider **copying these prompts to the top** of each function for easier access!
 
-### 4 . Implement with Copilot ✨
+### 4. Implement with Copilot ✨
+
 For **each function** (`read_lines`, `parse_line`, `triage`, `render`, `main`):
 
-1. **Read the corresponding prompt** at the bottom of the file
+1. **Read the corresponding prompt** at the top of the file
 2. **Position your cursor** on the `pass` statement
 3. **Type or paste the prompt** as a comment above `pass`
 4. **Hit Tab** to trigger Copilot suggestions
@@ -37,36 +86,34 @@ For **each function** (`read_lines`, `parse_line`, `triage`, `render`, `main`):
 6. **Test incrementally** - you can run the script after implementing `main()` to see argument parsing
 
 **Alternative approach:**
-- **Copy the entire prompt** from the bottom
+- **Copy the entire prompt** from the top
 - **Paste it as a comment** right above the `pass` statement  
 - **Delete the `pass`** and let Copilot generate the implementation
 
-> 💡 **Debugging Tip:** If Copilot doesn't suggest anything, try typing the first line yourself (e.g., `if file_path.suffix == ".gz":`) to give it context.working Python utility that:
+> 💡 **Debugging Tip:** If Copilot doesn't suggest anything, try typing the first line yourself (e.g., `if file_path.suffix == ".gz":`) to give it context.
 
-1. Streams either plain or gzipped access‑log files.  
-2. Filters entries by **date range** (`--from`/`--to`) or **last *N* minutes** (`--minutes`).  
-3. Tallies `(HTTP‑status, endpoint)` pairs.  
-4. Prints a compact Markdown‑style histogram.rgency Log Triage Demo
-
-## 🚀 What You’ll Build
-I### 5 . Test Your Implementation 🧪
+### 5. Test Your Implementation 🧪
 
 **First, check if argument parsing works:**
+
 ```bash
 python triage.py --help
 ```
 
 **Using date range (recommended for this demo):**
+
 ```bash
 python triage.py sample_access.log.gz --from 2025-07-15 --status 499,321 --top 10
 ```
 
 **Using time window (sliding from now):**
+
 ```bash
 python triage.py sample_access.log.gz --minutes 15 --status 499,321 --top 10
 ```
 
 **With specific date/time range:**
+
 ```bash
 python triage.py sample_access.log.gz --from "2025-07-15 16:00:00" --to "2025-07-15 18:00:00" --status 499,321
 ```
@@ -81,82 +128,10 @@ Expected output (truncated):
 | ...  | ...    | ...                | ...  |
 ```
 
-**💡 Pro tip:** Since the sample log contains data from July 2025, use `--from 2025-07-15` to see results. Feel free to omit `--status` to see **all** codes, or change `--top` for more/fewer results. you’ll use **GitHub Copilot** to transform a bare‑bones skeleton into a working Python utility that:
+**💡 Pro tip:** Since the sample log contains data from July 2025, use `--from 2025-07-15` to see results. Feel free to omit `--status` to see **all** codes, or change `--top` for more/fewer results.
 
-1. Streams either plain or gzipped access‑log files.  
-2. Filters entries from the **last *N* minutes**.  
-3. Tallies `(HTTP‑status, endpoint)` pairs.  
-4. Prints a compact Markdown‑style histogram.  
+### 6. Experiment
 
-The goal isn’t perfect code—it’s to **see Copilot’s UI and autocompletion magic in action**. You’ll prompt Copilot from comment blocks, accept (or finesse) its suggestions, and watch it generate production‑style boilerplate in seconds. 🪄
-
----
-
-## 🗂️ Repository Layout
-
-| Path | Purpose |
-|------|---------|
-| `triage.py` | The starter script with **function stubs** and embedded Copilot prompts. |
-| `sample_access.log.gz` | A 1 000‑line gzipped access‑log spanning the last hour, containing a mix of 2xx/4xx/5xx, plus custom `499` and `321` errors for testing. |
-| `README.md` | The instructions for this demo. |
-
----
-
-## 🛠️ Prerequisites
-
-| Tool | Version | Notes |
-|------|---------|-------|
-| Python | 3.8 + | Standard library only—no external packages required. |
-| VS Code | Latest | Any IDE that supports GitHub Copilot will work, but the steps below assume VS Code. |
-| GitHub Copilot | Enabled | Make sure the extension is signed‑in and working (check for 💡 suggestions). |
-
----
-
-## 🧑‍💻 Hands‑On Walkthrough
-
-### 1 . Clone & Open
-```bash
-git clone https://github.com/ps-copilot-sandbox/copilot-fundamentals-training.git
-cd demos/copilot-essentials/
-code .
-```
-
-### 2 . Explore the Skeleton
-Open **`triage.py`**. Every function body is just `pass` and is preceded by a short **Copilot prompt** (triple‑quoted).  
-Example:
-
-```python
-def read_lines(file_path: Path) -> Iterable[str]:
-    """Open plain or gzipped log file and yield each line (stripped)."""
-    pass  # ← Copilot will fill this in
-```
-
-### 3 . Invoke Copilot ✨
-1. **Highlight** the entire function (or place the cursor on `pass`).  
-2. Hit **<kbd>Tab</kbd>** (or your Copilot “Accept Suggestion” shortcut).  
-3. Copilot inserts a full implementation—review & accept.  
-4. Repeat for each function (`parse_line`, `triage`, `render`, `main`).  
-
-> 💡 **Tip:** You are encouraged to **read Copilot’s diff**; ask *“Why did it choose this regex?”* or *“Where’s the error handling?”*.
-
-### 4 . Run the Script
-```bash
-python triage.py --file sample_access.log.gz --minutes 15 --status 499,321 --top 10
-```
-
-Expected output (truncated):
-
-```
-Rank | Status | Path               | Hits
------|--------|--------------------|-----
- 1   | 499    | /api/v1/users      | 9
- 2   | 321    | /login             | 4
- ...
-```
-
-Feel free to omit `--status` to see **all** codes, or change `--minutes` and `--top`.
-
-### 5 . Experiment
 - **Change prompts** to ask for a progress bar or CSV export—then re‑run Copilot.  
 - **Break the log format** in a few lines and see if your `parse_line` gracefully skips invalid entries.  
 - **Swap in real logs** from your dev stack (keep them in `.log` or `.log.gz`).  
@@ -165,8 +140,8 @@ Feel free to omit `--status` to see **all** codes, or change `--minutes` and `--
 
 ## 🔍 Inside `sample_access.log.gz`
 
-* Format: **Apache/Nginx “combined” access log** (`ip – – [timestamp] "METHOD path HTTP/x.y" status size ...`).  
-* Time span: past 60 minutes, randomised per run.  
+* Format: **Apache/Nginx "combined" access log** (`ip – – [timestamp] "METHOD path HTTP/x.y" status size ...`).  
+* Time span: past 60 minutes, randomised per run.  
 * Status codes: normal 2xx & 3xx, plus plenty of `400`, `404`, `499`, `500`, `503` and a handful of **custom `321`**.  
 * Endpoints: typical REST routes (`/api/v1/*`), static assets, health checks.
 
@@ -177,7 +152,7 @@ Feel free to omit `--status` to see **all** codes, or change `--minutes` and `--
 ## 🎯 Learning Objectives
 
 | ✅ Skill | Demonstrated by |
-|----------|-----------------|
+|----------|------------------|
 | Prompt‑driven code generation | Turning comment blocks into working Python functions. |
 | Incremental acceptance | Reviewing, refining, or rejecting Copilot suggestions. |
 | Code explanation & learning | Using Copilot Chat to understand WHY code works, not just WHAT it does. |
@@ -193,9 +168,9 @@ Feel free to omit `--status` to see **all** codes, or change `--minutes` and `--
 
 | Q | A |
 |---|---|
-| “Why not use pandas?” | The lab is designed to stay in standard lib so no installs block your flow. |
-| “Does Copilot always nail it first try?” | No—guide it! Move the cursor, tighten the prompt, or type the first line yourself. |
-| “How big can the log be?” | Reading line‑by‑line uses constant memory; size is limited only by disk space. |
+| "Why not use pandas?" | The lab is designed to stay in standard lib so no installs block your flow. |
+| "Does Copilot always nail it first try?" | No—guide it! Move the cursor, tighten the prompt, or type the first line yourself. |
+| "How big can the log be?" | Reading line‑by‑line uses constant memory; size is limited only by disk space. |
 
 ---
 
@@ -212,12 +187,12 @@ Feel free to omit `--status` to see **all** codes, or change `--minutes` and `--
 
 ## 📚 Further Reading
 
-* [GitHub Copilot Docs → “Prompt Tips & Tricks”](https://docs.github.com/en/copilot)  
-* Python docs: [`datetime`](https://docs.python.org/3/library/datetime.html), [`re`](https://docs.python.org/3/library/re.html), [`argparse`](https://docs.python.org/3/library/argparse.html)  
+* [GitHub Copilot Docs → "Prompt Tips & Tricks"](https://docs.github.com/en/copilot)  
+* Python docs: [`datetime`](https://docs.python.org/3/library/datetime.html), [`re`](https://docs.python.org/3/library/re.html), [`argparse`](https://docs.python.org/3/library/argparse.html)  
 * Real‑world inspiration: [Nginx Log Formats](https://nginx.org/en/docs/http/ngx_http_log_module.html)
 
 ---
 
-### 🎉 You’re Done!
+### 🎉 You're Done!
 
-Fire up Copilot, generate the code, and impress your team with a **one‑off script** that would normally take an hour—now built in minutes. Happy triaging! 🥳
+Fire up Copilot, generate the code, and impress your team with a **one‑off script** that would normally take an hour—now built in minutes. Happy triaging! 🤓
