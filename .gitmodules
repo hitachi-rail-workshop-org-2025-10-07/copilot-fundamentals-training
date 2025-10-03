@@ -1,0 +1,3 @@
+[submodule "ms-terminal"]
+	path = ms-terminal
+	url = https://github.com/NTT-DATA-Demo-UK/ms-terminal
