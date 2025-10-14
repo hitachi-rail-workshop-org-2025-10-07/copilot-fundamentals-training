@@ -36,7 +36,7 @@
   ],
 
   // --- POST-CREATE SETUP (installs Python + Node dev tools) ---
-  "postCreateCommand": "python -m venv .venv && . .venv/bin/activate && python -m pip install --upgrade pip && pip install --no-cache-dir pytest pytest-cov black ruff ipykernel && if [ -f package.json ]; then if command -v pnpm >/dev/null 2>&1 && [ -f pnpm-lock.yaml ]; then pm=pnpm; elif command -v yarn >/dev/null 2>&1 && [ -f yarn.lock ]; then pm=yarn; else pm=npm; fi; $pm install -D typescript ts-node @types/node eslint prettier jest @types/jest && [ ! -f tsconfig.json ] && npx tsc --init --rootDir src --outDir dist --esModuleInterop --resolveJsonModule --module nodenext --moduleResolution nodenext --target ES2022 --lib ES2022,DOM --sourceMap true --skipLibCheck true; else echo 'No package.json found; skipping Node toolchain'; fi",
+  "postCreateCommand": "git submodule update --init --recursive && python -m venv .venv && . .venv/bin/activate && python -m pip install --upgrade pip && pip install --no-cache-dir pytest pytest-cov black ruff ipykernel && if [ -f package.json ]; then if command -v pnpm >/dev/null 2>&1 && [ -f pnpm-lock.yaml ]; then pm=pnpm; elif command -v yarn >/dev/null 2>&1 && [ -f yarn.lock ]; then pm=yarn; else pm=npm; fi; $pm install -D typescript ts-node @types/node eslint prettier jest @types/jest && [ ! -f tsconfig.json ] && npx tsc --init --rootDir src --outDir dist --esModuleInterop --resolveJsonModule --module nodenext --moduleResolution nodenext --target ES2022 --lib ES2022,DOM --sourceMap true --skipLibCheck true; else echo 'No package.json found; skipping Node toolchain'; fi",
 
   // Auto-activate venv when attaching
   "postAttachCommand": "bash -lc 'echo \"source ${workspaceFolder}/.venv/bin/activate\" >> ~/.bashrc'",
