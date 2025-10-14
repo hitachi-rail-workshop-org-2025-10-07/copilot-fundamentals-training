@@ -1,14 +1,13 @@
-
-# 🔑 Duplicate Keybindings Checker Demo  
+# 🔑 Duplicate Keybindings Checker Demo
 *A GitHub Copilot Fundamentals Lab (on **microsoft/terminal**)*
 
 ---
 
 ## 🚀 What You’ll Build
-Use **GitHub Copilot** to add a tiny helper that finds **duplicate keybindings** in a Windows Terminal `settings.json` file.  
+Use **GitHub Copilot** to add a tiny helper that finds **duplicate keybindings** in a Windows Terminal `settings.json` file.
 You’ll practice two core techniques:
 
-- **Task Decomposition** — do **one small step** at a time and verify.  
+- **Task Decomposition** — do **one small step** at a time and verify.
 - **GAR loop** — **Generate → Analyze (tests) → Repair** using a targeted prompt.
 
 > We edit a small folder only; you don’t need to build Windows Terminal.
@@ -20,7 +19,7 @@ You’ll practice two core techniques:
 |------|---------|
 | `tools/keybinding-dupes/dupes.py` | CLI + `find_duplicates(settings_path)` implementation. |
 | `tools/keybinding-dupes/test_dupes.py` | Minimal **pytest** suite (starts **red** by design). |
-| `tools/keybinding-dupes/samples/settings_with_dupes.json` | Sample settings with an intentional duplicate. |
+| `tools/keybinding-dupes/settings_with_dupes.json` | Sample settings with an intentional duplicate (created by the test). |
 | `tools/keybinding-dupes/samples/settings_clean.json` | *(Optional)* Clean sample (no duplicates). |
 
 ---
@@ -35,11 +34,11 @@ You’ll practice two core techniques:
 ---
 
 ## 🧭 Workflow Map
-**Step 1 — Create the tool (Copilot Chat)** →  
-**Step 2 — Add failing test + sample (Copilot Chat)** →  
-**Step 3 — Run tests (Terminal) ⇒ red** →  
-**Step 4 — GAR repair (Copilot Chat)** →  
-**Step 5 — Re‑run tests (Terminal) ⇒ green** →  
+**Step 1 — Create the tool (Copilot Chat)** →
+**Step 2 — Add failing test + sample (Copilot Chat)** →
+**Step 3 — Run tests (Terminal) ⇒ red** →
+**Step 4 — GAR repair (Copilot Chat)** →
+**Step 5 — Re‑run tests (Terminal) ⇒ green** →
 **Step 6 — *(Optional)* Add clean sample + test (Copilot Chat) ⇒ green**
 
 Each step below says **where to type**, gives a **copy‑paste prompt/command**, and includes an **explanation of the prompt** + the **prompt‑engineering techniques** it uses.
@@ -49,6 +48,13 @@ Each step below says **where to type**, gives a **copy‑paste prompt/command**,
 ## Pre-work - Clone & Open (💻 Terminal)
 ```bash
 git clone https://github.com/microsoft/terminal.git
+cd terminal
+code .
+```
+or
+
+```bash
+git submodule update --init --recursive
 cd terminal
 code .
 ```
@@ -78,13 +84,13 @@ Output code only.
 ```
 
 **What this means / why we enter it**
-- We are asking Copilot to **create just the core tool** that we’ll build on.  
-- The CLI gives us an **end‑to‑end path** to try the tool quickly.  
+- We are asking Copilot to **create just the core tool** that we’ll build on.
+- The CLI gives us an **end‑to‑end path** to try the tool quickly.
 - Calling out `"actions"` or `"keybindings"` keeps it robust across schema variants.
 
 **Prompt‑engineering techniques used**
-- **Task Decomposition:** “**Step 1 only**” limits scope to a single, bite‑sized step.  
-- **Specific constraints:** function name + return type + duplicate definition → fewer hallucinations.  
+- **Task Decomposition:** “**Step 1 only**” limits scope to a single, bite‑sized step.
+- **Specific constraints:** function name + return type + duplicate definition → fewer hallucinations.
 - **Format constraint:** “**Output code only**” keeps responses clean and pasteable.
 
 **Outcome:** a `dupes.py` file with a minimal `find_duplicates()` and CLI.
@@ -96,20 +102,20 @@ Output code only.
 **Prompt (paste into Copilot Chat):**
 ```
 Step 2 only: Create tools/keybinding-dupes/test_dupes.py with a single failing test:
-- test_detects_duplicate_keybindings: use samples/settings_with_dupes.json containing two
+- test_detects_duplicate_keybindings: use settings_with_dupes.json containing two
   entries with the same "keys" and "command"; expect find_duplicates() to return at least one duplicate.
-Also create samples/settings_with_dupes.json with a minimal structure containing those duplicates.
+Also create settings_with_dupes.json with a minimal structure containing those duplicates.
 Output code only.
 ```
 
 **What this means / why we enter it**
-- We’re asking Copilot to generate **one simple failing test** and the **sample data** it needs.  
-- The failure gives us an **objective target** for the next step (GAR).  
+- We’re asking Copilot to generate **one simple failing test** and the **sample data** it needs.
+- The failure gives us an **objective target** for the next step (GAR).
 - The sample file makes the lab **repeatable** and avoids environment differences.
 
 **Prompt‑engineering techniques used**
-- **Task Decomposition:** “**Step 2 only**” progresses one step without scope drift.  
-- **Ground truth creation:** intentional **failing test** sets clear pass/fail criteria for the model.  
+- **Task Decomposition:** “**Step 2 only**” progresses one step without scope drift.
+- **Ground truth creation:** intentional **failing test** sets clear pass/fail criteria for the model.
 - **Format constraint:** “**Output code only**” avoids extra prose.
 
 **Outcome:** a test file + a sample settings file. The test should **fail** at first.
@@ -119,10 +125,12 @@ Output code only.
 ## Step 3 - Run Tests and check our Script (💻 Terminal)
 ```bash
 pytest -q
-python3 dupes.py --path samples/setings_with_dupes.json
+python dupes.py --path settings_with_dupes.json
 ```
 **Expect:** **red**. That failure is your **ground truth** for the next step.
 - It’s red by design. Now we do a GAR loop - fix exactly what failed.
+
+**Note:** Do not pass `--path ...` to pytest. That argument is only for running the CLI directly, not for tests. Pytest will discover and run your tests automatically.
 
 ---
 
@@ -139,13 +147,13 @@ Output a unified diff only.
 ```
 
 **What this means / why we enter it**
-- We give Copilot the **exact error message** so it focuses on the real problem.  
-- We lock the **public API** (function & CLI) to prevent breaking changes.  
+- We give Copilot the **exact error message** so it focuses on the real problem.
+- We lock the **public API** (function & CLI) to prevent breaking changes.
 - We ask for a **unified diff** so the output is reviewable and minimal.
 
 **Prompt‑engineering techniques used**
-- **GAR loop:** test output → **Analyze** → target the **Repair**.  
-- **High‑specificity instruction:** pasting the **failure text** removes ambiguity.  
+- **GAR loop:** test output → **Analyze** → target the **Repair**.
+- **High‑specificity instruction:** pasting the **failure text** removes ambiguity.
 - **Format constraint:** “**unified diff only**” enforces concise patches.
 
 **Goal:** Copilot returns a small diff that addresses the specific failure.
@@ -155,9 +163,9 @@ Output a unified diff only.
 ## Step 5 - Re‑run Tests (💻 Terminal)
 ```bash
 pytest -q
-python3 dupes.py --path samples/setings_with_dupes.json
+python dupes.py --path settings_with_dupes.json
 ```
-- Still **red**? Paste the new failure into Copilot Chat and repeat **Step 3**.  
+- Still **red**? Paste the new failure into Copilot Chat and repeat **Step 3**.
 - **Green?** You’re done with the core loop.
 
 ---
@@ -169,15 +177,15 @@ python3 dupes.py --path samples/setings_with_dupes.json
 Add samples/settings_clean.json with no duplicates and a test
 test_returns_empty_when_no_duplicates. Output code only.
 ```
-or 
-- Change the keys in the sample file to whatever you would like and re-run the tests. 
+or
+- Change the keys in the sample file to whatever you would like and re-run the tests.
 
 **What this means / why we enter it**
-- We add a **positive case** to prove the tool reports **no issues** when the file is clean.  
+- We add a **positive case** to prove the tool reports **no issues** when the file is clean.
 - This guards against false positives and documents intended behavior.
 
 **Prompt‑engineering techniques used**
-- **Coverage expansion:** positive + negative tests reduce drift in future edits.  
+- **Coverage expansion:** positive + negative tests reduce drift in future edits.
 - **Format constraint:** “**Output code only**.”
 
 Re‑run:
@@ -190,15 +198,15 @@ pytest -q
 ## ▶️ Try the CLI (💻 Terminal)
 Point the tool at the sample with dupes:
 ```bash
-python tools/keybinding-dupes/dupes.py --path tools/keybinding-dupes/samples/settings_with_dupes.json
+python tools/keybinding-dupes/dupes.py --path tools/keybinding-dupes/settings_with_dupes.json
 ```
 You should see a clear summary identifying at least one duplicate `(keys, command)` pair.
 
 ---
 
 ## 🧰 Guardrails You Can Reuse
-- **Keep scope tight:** “**Step X only**. **Output code only.**”  
-- **Constrain output:** “**Output a unified diff only.**”  
+- **Keep scope tight:** “**Step X only**. **Output code only.**”
+- **Constrain output:** “**Output a unified diff only.**”
 - **Target the fix:** paste the **exact failing test output** (no summaries).
 
 ---

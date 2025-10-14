@@ -1,19 +1,100 @@
 {
-  "image": "mcr.microsoft.com/devcontainers/universal:2",
-  "hostRequirements": {
-    "cpus": 4
+  "name": "Copilot Demo (Slim)",
+  "image": "mcr.microsoft.com/devcontainers/base:ubuntu-22.04",
+
+  // --- FEATURES (lightweight instead of universal:2) ---
+  "features": {
+    // Common CLI tools (curl, git, sudo, zsh, etc.)
+    "ghcr.io/devcontainers/features/common-utils:2": {
+      "username": "vscode",
+      "installZsh": true
+    },
+
+    // Python 3.12 + pip
+    "ghcr.io/devcontainers/features/python:1": {
+      "version": "3.12",
+      "installTools": true
+    },
+
+    // Node 22 + npm + yarn + pnpm
+    "ghcr.io/devcontainers/features/node:1": {
+      "version": "22",
+      "yarn": "true",
+      "pnpm": "true"
+    }
   },
-  "name": "Copilot Demo",
-  "postCreateCommand": "sudo cp --force ./.devcontainer/welcome-message.txt /usr/local/etc/vscode-dev-containers/first-run-notice.txt",
+
+  // --- HOST + ENV SETTINGS ---
+  "hostRequirements": { "cpus": 4 },
+  "containerEnv": {
+    "PYTHONUNBUFFERED": "1",
+    "PIP_NO_CACHE_DIR": "1"
+  },
+  "runArgs": [
+    "--cap-add=SYS_PTRACE",
+    "--security-opt", "seccomp=unconfined"
+  ],
+
+  // --- POST-CREATE SETUP (installs Python + Node dev tools) ---
+  "postCreateCommand": "git submodule update --init --recursive && python -m venv .venv && . .venv/bin/activate && python -m pip install --upgrade pip && pip install --no-cache-dir pytest pytest-cov black ruff ipykernel && if [ -f package.json ]; then if command -v pnpm >/dev/null 2>&1 && [ -f pnpm-lock.yaml ]; then pm=pnpm; elif command -v yarn >/dev/null 2>&1 && [ -f yarn.lock ]; then pm=yarn; else pm=npm; fi; $pm install -D typescript ts-node @types/node eslint prettier jest @types/jest && [ ! -f tsconfig.json ] && npx tsc --init --rootDir src --outDir dist --esModuleInterop --resolveJsonModule --module nodenext --moduleResolution nodenext --target ES2022 --lib ES2022,DOM --sourceMap true --skipLibCheck true; else echo 'No package.json found; skipping Node toolchain'; fi",
+
+  // Auto-activate venv when attaching
+  "postAttachCommand": "bash -lc 'echo \"source ${workspaceFolder}/.venv/bin/activate\" >> ~/.bashrc'",
+
+  // --- VS CODE SETTINGS + EXTENSIONS ---
   "customizations": {
     "vscode": {
       "extensions": [
+        // --- GitHub Copilot ecosystem ---
         "GitHub.copilot",
         "GitHub.copilot-chat",
         "GitHub.copilot-labs",
+
+        // --- Python development ---
+        "ms-python.python",
+        "ms-python.vscode-pylance",
+        "ms-python.black-formatter",
+        "charliermarsh.ruff",
+        "ms-toolsai.jupyter",
+
+        // --- Node / TypeScript development ---
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode",
+        "christian-kohler.npm-intellisense",
+        "streetsidesoftware.code-spell-checker",
+        "visualstudioexptteam.vscodeintellicode",
+
+        // --- Collaboration / utilities ---
         "vsls-contrib.codetour",
-        "Phu1237.vs-browser"
-      ]
+        "Phu1237.vs-browser",
+        "eamodio.gitlens",
+        "EditorConfig.EditorConfig",
+        "PKief.material-icon-theme"
+      ],
+
+      "settings": {
+        // --- Python config ---
+        "python.defaultInterpreterPath": "${workspaceFolder}/.venv/bin/python",
+        "python.testing.pytestEnabled": true,
+        "python.testing.unittestEnabled": false,
+        "python.analysis.typeCheckingMode": "basic",
+        "[python]": { "editor.defaultFormatter": "ms-python.black-formatter" },
+        "ruff.enable": true,
+
+        // --- Node/TS config ---
+        "eslint.validate": ["javascript", "typescript", "javascriptreact", "typescriptreact"],
+        "prettier.requireConfig": true,
+        "typescript.tsdk": "${workspaceFolder}/node_modules/typescript/lib",
+        "typescript.enablePromptUseWorkspaceTsdk": true,
+        "[typescript]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+        "[typescriptreact]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+
+        // --- Editor preferences ---
+        "editor.formatOnSave": true,
+        "editor.tabSize": 2,
+        "files.trimTrailingWhitespace": true,
+        "files.insertFinalNewline": true
+      }
     }
   }
 }
