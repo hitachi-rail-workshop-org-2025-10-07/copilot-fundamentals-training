@@ -1,33 +1,10 @@
 {
-  "name": "Copilot Demo",
   "image": "mcr.microsoft.com/devcontainers/universal:2",
-
-  "features": {
-    "ghcr.io/devcontainers/features/python:1": {
-      "version": "3.12",
-      "installTools": true
-    },
-    "ghcr.io/devcontainers/features/node:1": {
-      "version": "22",
-      "pnpm": "true",
-      "yarn": "true"
-    }
+  "hostRequirements": {
+    "cpus": 4
   },
-
-  "hostRequirements": { "cpus": 4 },
-
-  "containerEnv": {
-    "PYTHONUNBUFFERED": "1"
-  },
-
-  "runArgs": [
-    "--cap-add=SYS_PTRACE",
-    "--security-opt", "seccomp=unconfined"
-  ],
-
-  "postCreateCommand": "sudo cp --force ./.devcontainer/welcome-message.txt /usr/local/etc/vscode-dev-containers/first-run-notice.txt && python -m venv .venv && . .venv/bin/activate && python -m pip install --upgrade pip && pip install pytest pytest-cov black ruff ipykernel && if [ -f package.json ]; then if command -v pnpm >/dev/null 2>&1 && [ -f pnpm-lock.yaml ]; then pm=pnpm; elif command -v yarn >/dev/null 2>&1 && [ -f yarn.lock ]; then pm=yarn; else pm=npm; fi; $pm install -D typescript ts-node @types/node && [ ! -f tsconfig.json ] && npx tsc --init --rootDir src --outDir dist --esModuleInterop --resolveJsonModule --module nodenext --moduleResolution nodenext --target ES2022 --lib ES2022,DOM --sourceMap true --skipLibCheck true; else echo 'No package.json found; skipping TypeScript deps'; fi",
-  "postAttachCommand": "bash -lc 'echo \"source ${workspaceFolder}/.venv/bin/activate\" >> ~/.bashrc'",
-
+  "name": "Copilot Demo",
+  "postCreateCommand": "sudo cp --force ./.devcontainer/welcome-message.txt /usr/local/etc/vscode-dev-containers/first-run-notice.txt",
   "customizations": {
     "vscode": {
       "extensions": [
@@ -35,36 +12,8 @@
         "GitHub.copilot-chat",
         "GitHub.copilot-labs",
         "vsls-contrib.codetour",
-        "Phu1237.vs-browser",
-
-        "ms-python.python",
-        "ms-python.vscode-pylance",
-        "ms-toolsai.jupyter",
-        "ms-python.black-formatter",
-        "charliermarsh.ruff",
-
-        "dbaeumer.vscode-eslint",
-        "esbenp.prettier-vscode",
-        "christian-kohler.npm-intellisense"
-      ],
-      "settings": {
-        "python.defaultInterpreterPath": "${workspaceFolder}/.venv/bin/python",
-        "python.testing.pytestEnabled": true,
-        "python.testing.unittestEnabled": false,
-        "python.analysis.typeCheckingMode": "basic",
-
-        "editor.formatOnSave": true,
-        "[python]": { "editor.defaultFormatter": "ms-python.black-formatter" },
-        "ruff.enable": true,
-
-        "eslint.validate": ["javascript", "typescript", "javascriptreact", "typescriptreact"],
-        "prettier.requireConfig": true,
-
-        "typescript.tsdk": "${workspaceFolder}/node_modules/typescript/lib",
-        "typescript.enablePromptUseWorkspaceTsdk": true,
-        "[typescript]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
-        "[typescriptreact]": { "editor.defaultFormatter": "esbenp.prettier-vscode" }
-      }
+        "Phu1237.vs-browser"
+      ]
     }
   }
 }
