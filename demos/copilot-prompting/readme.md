@@ -51,6 +51,13 @@ git clone https://github.com/microsoft/terminal.git
 cd terminal
 code .
 ```
+or
+
+```bash
+git submodule update --init --recursive
+cd terminal
+code .
+```
 
 > ⚠️ **Important for Trainers**: This demo requires cloning the Microsoft Terminal repository (large download ~50MB). Ensure participants have good internet connectivity and sufficient disk space. Consider pre-cloning in training environments.
 
